@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Tour — Canlı Analiz Merkezi</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">🎯 <b>Business Tour</b> <span class="sub">Canlı Analiz Merkezi</span></div>
+  <div class="topbar-right">
+    <span class="badge" id="mcBadge">Simülasyon: —</span>
+    <button id="btnReset" class="btn ghost" title="Her şeyi sıfırla">↺ Sıfırla</button>
+  </div>
+</header>
+
+<main class="layout">
+
+  <!-- ======================= TAHTA ======================= -->
+  <section class="board-wrap">
+    <div class="board-toolbar">
+      <div class="heat-toggles" id="heatToggles">
+        <button data-mode="off"   class="heat-btn active">Görünüm</button>
+        <button data-mode="danger" class="heat-btn">🔥 Tehlike Haritası</button>
+        <button data-mode="ev"     class="heat-btn">💎 Fırsat Haritası</button>
+      </div>
+      <button id="btnFestival" class="btn small">🎪 Rastgele Festival</button>
+    </div>
+
+    <div class="board" id="board">
+      <!-- 40 kare + merkez, JS ile doldurulur -->
+      <div class="center" id="boardCenter"></div>
+    </div>
+
+    <div class="legend">
+      <span><i class="sw sw-you"></i> Sen</span>
+      <span><i class="sw sw-r1"></i> R1</span>
+      <span><i class="sw sw-r2"></i> R2</span>
+      <span><i class="sw sw-r3"></i> R3</span>
+      <span>🎪 Festival</span>
+      <span>🏆 Şampiyona</span>
+      <span class="hint">Kareye tıkla → detay/satın alma</span>
+    </div>
+  </section>
+
+  <!-- ======================= PANEL ======================= -->
+  <aside class="panel">
+    <nav class="tabs" id="tabs">
+      <button data-tab="play" class="tab active">⚡ Hamle</button>
+      <button data-tab="players" class="tab">👥 Oyuncular</button>
+      <button data-tab="sim" class="tab">🧮 Simülasyon</button>
+      <button data-tab="win" class="tab">🏁 Kazanma</button>
+      <button data-tab="map" class="tab">🗺️ Harita Düzenle</button>
+      <button data-tab="strat" class="tab">📖 Strateji</button>
+    </nav>
+
+    <!-- ---------- HAMLE ---------- -->
+    <div class="tab-body active" id="tab-play">
+      <div id="recTop"></div>
+      <h3>🎲 Zar Modu</h3>
+      <div class="row">
+        <select id="diceSelect" class="inp"></select>
+        <button id="btnRoll" class="btn primary">Zar At</button>
+        <button id="btnWorldTour" class="btn accent" title="Dünya Turu en iyi hedefi hesapla">🌍 Tur Öner</button>
+      </div>
+      <div id="diceResult" class="card dim"></div>
+
+      <h3>💡 Anlık Öneriler <span class="hint">(durum değiştikçe otomatik yenilenir)</span></h3>
+      <div id="recList"></div>
+
+      <h3>🌍 Dünya Turu — En İyi Hedefler</h3>
+      <div id="wtList" class="wt-list"></div>
+    </div>
+
+    <!-- ---------- OYUNCULAR ---------- -->
+    <div class="tab-body" id="tab-players">
+      <div id="playerList"></div>
+      <h3>🏆 Dünya Şampiyonası</h3>
+      <p class="hint">Şampiyona şehrini seç (kira ×2):</p>
+      <select id="champSelect" class="inp full"></select>
+      <h3>⏱️ Oyun Ayarları</h3>
+      <div class="row">
+        <label>Kalan süre: <input type="number" id="minutesLeft" class="inp num" min="0" max="120" value="20"> dk</label>
+        <label>Kalan tur: <input type="number" id="turnsLeft" class="inp num" min="0" max="300" value="50"></label>
+      </div>
+    </div>
+
+    <!-- ---------- SİMÜLASYON ---------- -->
+    <div class="tab-body" id="tab-sim">
+      <h3>🧮 Monte Carlo Simülasyonu</h3>
+      <p class="hint">Mevcut durumu binlerce kez oynatır; gerçek kazanma ihtimalini hesaplar. Strateji: kanıtlanmış "yüksek ROI + blok" politikası.</p>
+      <div class="row">
+        <label>Simülasyon: <input type="number" id="simIter" class="inp num" value="2000" min="200" max="10000" step="100"></label>
+        <label>Kalan tur: <input type="number" id="simTurns" class="inp num" value="50" min="10" max="200"></label>
+      </div>
+      <button id="btnSim" class="btn primary full">🚀 Hesapla (Kazanma İhtimali)</button>
+      <div id="simResult" class="card dim">Henüz hesaplanmadı.</div>
+    </div>
+
+    <!-- ---------- KAZANMA ---------- -->
+    <div class="tab-body" id="tab-win">
+      <h3>🏁 Kazanma Yolları Takibi</h3>
+      <div id="winThreats"></div>
+      <div id="winProgress"></div>
+    </div>
+
+    <!-- ---------- HARİTA ---------- -->
+    <div class="tab-body" id="tab-map">
+      <h3>🗺️ Harita Düzenle</h3>
+      <p class="hint">Kendi oyunundaki gerçek fiyat/kiraları girin; tüm hesaplar (EV, ROI, simülasyon) anında güncellenir.</p>
+      <div class="row">
+        <button id="btnMapSave" class="btn primary">💾 Kaydet & Yeniden Hesapla</button>
+        <button id="btnMapReset" class="btn ghost">Varsayılana Dön</button>
+      </div>
+      <div id="mapEditor"></div>
+    </div>
+
+    <!-- ---------- STRATEJİ ---------- -->
+    <div class="tab-body" id="tab-strat">
+      <div class="card">
+        <h3>📖 Kanıtlanmış Kazanma Kuralları</h3>
+        <ul class="rules">
+          <li><b>Plajlara (tatil köyü) para harcama</b> — ROI %12-17, en kötü yatırım. Sadece rakibin 3 köyü varsa blokla.</li>
+          <li><b>İlk tarafı (Granada→Şanghay) alma</b> — düşük ROI. Paranı Londra→Tokyo arasına (fiyat ≥600K) yatır.</li>
+          <li><b>2-3 yüksek şehirde 2-3 ev / otel</b> — çok sayıda 1 evli şehirden çok daha iyidir. Tokyo 3 ev: %60 ROI.</li>
+          <li><b>Festival şehrini her zaman al</b> (kira ×2). En uzaktaki festival en değerlisidir.</li>
+          <li><b>Zar: 6-7-8 toplamları %46'dır.</b> Dünya Turu'nda 7 kare ileride iyi sonuç olan kareye git.</li>
+          <li><b>Kayıp Ada:</b> oyun sonunda kal; başlangıçta 200K ödeyip çık (mülk almak kritik).</li>
+          <li><b>Son 2 dakika:</b> en yüksek mülk değeri kazanır → kalan parayı yüksek ROI'ye yatır, riskli zar atma.</li>
+          <li><b>Otel depremden etkilenmez</b> — önce oteli tamamla.</li>
+          <li><b>Rakibi blokla:</b> bir grup/kenar/köy kazanmaya yakınsa eksik kareyi satın al.</li>
+          <li><b>Çifte düşünce dikkat:</b> 3 çift = Kayıp Ada.</li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<!-- ---------- KARE DETAY MODAL ---------- -->
+<div class="modal-overlay hidden" id="tileModal">
+  <div class="modal card" id="tileModalBody"></div>
+</div>
+
+<script src="data.js"></script>
+<script src="engine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
